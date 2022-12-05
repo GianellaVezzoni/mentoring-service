@@ -1,5 +1,5 @@
 import { DependencyManager } from "../dependencyManager"
-import JwtMiddlewareInitializer from "./JwtValidator/JwtMiddlewareInitalizer"
+import JwtMiddlewareInitializer from "./jwtValidator/JwtMiddlewareInitalizer"
 // We can register global middlewares here
 
 const MiddlewaresInitializer = (dependencyManager:DependencyManager) => {

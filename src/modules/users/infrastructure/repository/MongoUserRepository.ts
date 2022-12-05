@@ -17,7 +17,18 @@ export const MongoUserRepository = (): IUserRepository => ({
   },
   async get(query) {
     const {page_count = configs.api.default_page_count, page_number= 0,...rest} = query
-    return await UserModel.find(rest).limit(Number(page_count)).skip(Number(page_number))
+    const total = await UserModel.countDocuments(rest)
+    const users = await UserModel.find(rest).limit(Number(page_count)).skip(Number(page_number))
+    const pagination = {
+      total,
+      page_number,
+      page_count,
+      records:users.length
+    }
+    return {
+      users,
+      pagination
+    }
   },
   async getById(id) {
     return await UserModel.findById(id)
