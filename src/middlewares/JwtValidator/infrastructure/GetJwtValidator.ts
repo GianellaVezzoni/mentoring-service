@@ -5,8 +5,8 @@ import { IJwtValidator } from "../core/IJwtValidator";
 const jwt = require("jsonwebtoken");
 const getJwtValidator = (UserRepository: IUserRepository): IJwtValidator => {
     const jwtValidator = async (req: Request, res: Response, next: NextFunction) => {
-        const token = req.header("authorization");
-        if (!token) {
+        const bearerHeader = req.header("authorization");
+        if (!bearerHeader) {
           return res.status(401).json({
             status: 401,
             success: false,
@@ -14,6 +14,18 @@ const getJwtValidator = (UserRepository: IUserRepository): IJwtValidator => {
             type: 'auth'
           })
         }
+        const bearer = bearerHeader.split(' ')
+        const token = bearer[1]
+
+        if(!token) {
+          return res.status(401).json({
+            status: 401,
+            success: false,
+            msg: "Se necesita el prefijo Bearer",
+            type: 'auth'
+          })
+        }
+
         try {
           const { id } = jwt.verify(token, configs.secret_key);
           //leer user
