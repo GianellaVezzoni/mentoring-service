@@ -9,3 +9,8 @@ coverage/*
 test-results.xml
 /instantclient_21_7
 package-lock.json
+
+# env
+.env
+.history
+.qodo
