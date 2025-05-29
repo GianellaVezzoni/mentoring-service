@@ -11,7 +11,8 @@
     "migrate:down_last": "ts-node migrations/index.ts down --last",
     "migrate:status": "ts-node migrations/index.ts status",
     "migrate:down_all": "ts-node migrations/index.ts down --all",
-    "seed:user": "ts-node src/seeders/userSeeder.ts"
+    "seed:user": "ts-node src/seeders/userSeeder.ts",
+    "build": "tsc"
   },
   "license": "ISC",
   "devDependencies": {
