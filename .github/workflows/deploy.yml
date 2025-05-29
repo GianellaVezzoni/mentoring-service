@@ -12,54 +12,6 @@ env:
   AZURE_WEBAPP_PACKAGE_PATH: "." # Set this to the path to your web app project
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    services:
-      mongodb:
-        image: mongo:6.0
-        env:
-          MONGO_INITDB_ROOT_USERNAME: root
-          MONGO_INITDB_ROOT_PASSWORD: password
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Create environment file
-        run: |
-          echo "PORT=8080" >> .env
-          echo "URI=mongodb://root:password@localhost:27017" >> .env
-          echo "MIGRATE_MONGO_URI=mongodb://root:password@localhost:27017" >> .env
-          echo "MIGRATE_MONGO_DB=mentoring_test" >> .env
-          echo "SECRETPRIVATEKEY=test-secret-key-for-ci" >> .env
-          echo "DEFAULT_PAGE_COUNT=10" >> .env
-          echo "MIGRATE_USER_DEFAULT_NAME=Admin" >> .env
-          echo "MIGRATE_USER_DEFAULT_EMAIL=admin@test.com" >> .env
-          echo "MIGRATE_USER_DEFAULT_PASSWORD=admin123" >> .env
-
-      - name: Build TypeScript
-        run: npx tsc
-
-      - name: Run database migrations
-        run: npm run migrate:up
-
   build:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -93,74 +45,6 @@ jobs:
         with:
           name: build-files
           path: deployment/
-
-  deploy-azure-staging:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    environment: staging
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npx tsc
-
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_STAGING }}
-
-      - name: Deploy to Azure App Service (Staging)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}-staging
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          startup-command: "npm run migrate:up && node build/index.js"
-
-  deploy-azure-production:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    environment: production
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npx tsc
-
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }}
-
-      - name: Deploy to Azure App Service (Production)
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-          startup-command: "npm run migrate:up && node build/index.js"
 
   # Alternative: Deploy using Azure Container Registry + App Service
   deploy-azure-container:
@@ -196,24 +80,6 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io/mentoring-service:${{ github.sha }}
 
-  # Legacy deployment options (commented out for Azure focus)
-  deploy-staging:
-    needs: build
-    runs-on: ubuntu-latest
-    if: false # Disabled in favor of Azure deployment
-    environment: staging
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-files
-          path: deployment/
-
-      - name: Deploy to staging server
-        run: |
-          echo "Deploying to staging environment..."
-
   deploy-production:
     needs: build
     runs-on: ubuntu-latest
@@ -230,68 +96,3 @@ jobs:
       - name: Deploy to production server
         run: |
           echo "Deploying to production environment..."
-
-  # Alternative: Deploy to cloud platforms
-  deploy-heroku:
-    needs: build
-    runs-on: ubuntu-latest
-    if: false # Set to true if you want to use Heroku deployment
-    environment: production
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.14
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "your-app-name"
-          heroku_email: "your-email@example.com"
-          buildpack: "heroku/nodejs"
-
-  deploy-aws:
-    needs: build
-    runs-on: ubuntu-latest
-    if: false # Set to true if you want to use AWS deployment
-    environment: production
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-files
-          path: deployment/
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Deploy to AWS Elastic Beanstalk
-        run: |
-          # Create deployment package
-          zip -r deployment.zip deployment/
-          # Deploy using AWS CLI or EB CLI
-          # eb deploy your-environment-name
-
-  deploy-digitalocean:
-    needs: build
-    runs-on: ubuntu-latest
-    if: false # Set to true if you want to use DigitalOcean deployment
-    environment: production
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-files
-          path: deployment/
-
-      - name: Deploy to DigitalOcean App Platform
-        uses: digitalocean/app_action@v1.1.5
-        with:
-          app_name: mentoring-service
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
