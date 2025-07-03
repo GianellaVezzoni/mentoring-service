@@ -37,8 +37,8 @@ jobs:
           mkdir -p deployment
           cp -r build deployment/
           cp package*.json deployment/
-          cp -r migrations deployment/
-          cp migrations.json deployment/
+          cp -r migrations deployment/ || echo "No migrations folder"
+          cp migrations.json deployment/ || echo "No migrations.json"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -46,53 +46,9 @@ jobs:
           name: build-files
           path: deployment/
 
-  # Alternative: Deploy using Azure Container Registry + App Service
-  deploy-azure-container:
-    needs: build
-    runs-on: ubuntu-latest
-    if: false # Set to true if you want to use container deployment
-    environment: production
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }}
-
-      - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io
-          username: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-          password: ${{ secrets.AZURE_CONTAINER_REGISTRY_PASSWORD }}
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io/mentoring-service:${{ github.sha }} .
-          docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io/mentoring-service:${{ github.sha }}
-
-      - name: Deploy to Azure App Service (Container)
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          images: ${{ secrets.AZURE_CONTAINER_REGISTRY }}.azurecr.io/mentoring-service:${{ github.sha }}
-
-  deploy-production:
-    needs: build
-    runs-on: ubuntu-latest
-    if: false # Disabled in favor of Azure deployment
-    environment: production
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-files
-          path: deployment/
-
-      - name: Deploy to production server
-        run: |
-          echo "Deploying to production environment..."
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: deployment
