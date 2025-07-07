@@ -32,6 +32,9 @@ jobs:
       - name: Build application
         run: npx tsc
 
+      - name: Run migrations
+        run: npm run migrate
+
       - name: Create deployment package
         run: |
           mkdir -p deployment

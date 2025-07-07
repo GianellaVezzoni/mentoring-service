@@ -1,3 +1,4 @@
+import { IProgressRepository } from "../../../progress/core/repository/IMongoProgressRepository";
 import { IUserRepository } from "../repository/IMongoUserRepository";
 import { IHashService } from "../services/IHashService";
 import { EditUserAction, IEditUserAction } from "./EditUserAction";
@@ -23,10 +24,11 @@ export interface IUserActions {
 }
 export const getUserActions = (
   UserRepository: IUserRepository,
-  hashService: IHashService
+  hashService: IHashService,
+  progressRepository: IProgressRepository
 ) => {
   const UserActions: IUserActions = {
-    save: SaveUserAction(UserRepository, hashService),
+    save: SaveUserAction(UserRepository, hashService, progressRepository),
     edit: EditUserAction(UserRepository, hashService),
     remove: RemoveUserAction(UserRepository),
     getAll: GetAllUsersAction(UserRepository),

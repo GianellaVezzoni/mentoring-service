@@ -14,10 +14,13 @@ const ProgressSchema = new Schema({
   description: {
     type: String,
   },
-  metrics: {
-    type: Object,
-    default: {},
-  },
+  metrics: [
+    {
+      objective: { type: String, required: true },
+      value: { type: Number, required: true },
+      date: { type: Date, default: Date.now },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

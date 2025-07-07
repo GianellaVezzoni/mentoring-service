@@ -37,6 +37,11 @@ const UserSchema = new Schema({
   updatedAt: {
     type: Date,
   },
+  objectives: {
+    type: [String],
+    ref: "Metric",
+    default: [],
+  },
 });
 
 UserSchema.methods.toJSON = function () {

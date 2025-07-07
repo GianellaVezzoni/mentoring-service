@@ -38,6 +38,6 @@ export const MongoProgressRepository = (): IProgressRepository => ({
     return await ProgressModel.findById(id);
   },
   async getByUser(userId) {
-    return await ProgressModel.find({ userId });
+    return await ProgressModel.find({ userId }).populate("metrics");
   },
 });

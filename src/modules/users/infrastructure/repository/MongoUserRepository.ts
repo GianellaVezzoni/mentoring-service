@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../core/repository/IMongoUserRepository";
 import UserModel from "../models/UserModel";
 import configs from "../../../../configs";
-import ProgressSchema from "../../../progress/infrastructure/models/ProgressModel";
+import ProgressModel from "../../../progress/infrastructure/models/ProgressModel";
 
 export const MongoUserRepository = (): IUserRepository => ({
   async save(user) {
@@ -12,6 +12,7 @@ export const MongoUserRepository = (): IUserRepository => ({
     return await UserModel.findByIdAndUpdate(id, user);
   },
   async remove(id) {
+    await ProgressModel.deleteMany({ userId: id });
     return await UserModel.findByIdAndDelete(id);
   },
   async get(query) {

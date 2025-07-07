@@ -6,4 +6,5 @@ export default interface IUser {
   status?: boolean;
   tags?: string[];
   mentorId?: string;
+  objectives?: string[];
 }
