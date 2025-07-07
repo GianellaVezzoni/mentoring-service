@@ -30,7 +30,7 @@ app.post("/admin/migrate", async (req, res) => {
   }
 
   try {
-    const migrate = require("../../build/migrations/index.js");
+    const migrate = require("../build/migrations/index.js");
     await migrate.up();
     return res.send("✅ Migraciones ejecutadas");
   } catch (err) {
