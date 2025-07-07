@@ -14,6 +14,7 @@ const configs = {
   },
   migrations: {
     uri: process.env.MONGO_CONNECTION_URI,
+    db: process.env.MIGRATE_MONGO_DB || "mentoring-db",
   },
 };
 
