@@ -7,7 +7,6 @@ import ConfigureServerMiddlewares from "./server/MiddlewaresConfig";
 import ReduceRouters from "./server/RoutesReducer";
 import InitializeServer from "./server/ServerInitializer";
 import ServicesInitializer from "./services/ServicesInitalizer";
-import { RunMigrations } from "./modules/statusCheck";
 
 const dependencyManager = new DependencyManager();
 
@@ -17,8 +16,6 @@ ConnectToDatabase();
 
 ConfigureServerMiddlewares(app);
 
-RunMigrations(app);
-
 ServicesInitializer(dependencyManager);
 
 ModulesInitializer(dependencyManager);
@@ -26,3 +23,18 @@ ModulesInitializer(dependencyManager);
 MiddlewaresInitializer(dependencyManager);
 
 ReduceRouters(app, dependencyManager);
+
+app.post("/admin/migrate", async (req, res) => {
+  if (req.headers.authorization !== `${process.env.ADMIN_KEY}`) {
+    return res.status(403).send("Unauthorized");
+  }
+
+  try {
+    const migrate = require("../../build/migrations/index.js");
+    await migrate.up();
+    res.send("✅ Migraciones ejecutadas");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("❌ Error al ejecutar migraciones");
+  }
+});
