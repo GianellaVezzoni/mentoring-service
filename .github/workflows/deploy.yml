@@ -1,36 +1,28 @@
-name: Deploy Mentoring Service
+name: Deploy to Azure App Service
 
 on:
   push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
-
-env:
-  NODE_VERSION: "22"
-  AZURE_WEBAPP_NAME: "mentoring-service" # Set this to your app name
-  AZURE_WEBAPP_PACKAGE_PATH: "." # Set this to the path to your web app project
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          node-version: 22
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application
-        run: npx tsc
+      - name: Build
+        run: npm run build
 
       - name: Run migrations
         run: npm run migrate
@@ -38,20 +30,12 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p deployment
-          cp -r build deployment/
+          cp -r build/ deployment/
           cp package*.json deployment/
-          cp -r migrations deployment/ || echo "No migrations folder"
-          cp migrations.json deployment/ || echo "No migrations.json"
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-files
-          path: deployment/
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          app-name: mentoring-service
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: deployment
