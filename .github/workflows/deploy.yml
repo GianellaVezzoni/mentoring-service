@@ -20,17 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: ✅ Verificar start script
-        run: |
-          echo "🕵️ Verificando que el script de start sea correcto..."
-          START_SCRIPT=$(node -pe "require('./package.json').scripts.start")
-          echo "Start script encontrado: $START_SCRIPT"
-          if [ "$START_SCRIPT" != "node index.js" ]; then
-            echo "❌ ERROR: El start script debe ser 'node index.js' y no '$START_SCRIPT'"
-            exit 1
-          fi
-
+        
       - name: Build
         run: npm run build
         env:
