@@ -32,9 +32,9 @@ app.post("/admin/migrate", async (req, res) => {
   try {
     const migrate = require("../../build/migrations/index.js");
     await migrate.up();
-    res.send("✅ Migraciones ejecutadas");
+    return res.send("✅ Migraciones ejecutadas");
   } catch (err) {
     console.error(err);
-    res.status(500).send("❌ Error al ejecutar migraciones");
+    return res.status(500).send("❌ Error al ejecutar migraciones");
   }
 });
