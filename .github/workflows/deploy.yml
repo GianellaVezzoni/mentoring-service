@@ -25,6 +25,7 @@ jobs:
         run: npm run build
         env:
           MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
+          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
 
       - name: Create deployment package
         run: |
