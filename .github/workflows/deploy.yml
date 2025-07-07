@@ -30,7 +30,7 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p deployment
-          cp -r build/ deployment/
+          cp -r build/* deployment/
           cp package*.json deployment/
 
       - name: Deploy to Azure Web App
