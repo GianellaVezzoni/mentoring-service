@@ -7,19 +7,22 @@ import ConfigureServerMiddlewares from "./server/MiddlewaresConfig";
 import ReduceRouters from "./server/RoutesReducer";
 import InitializeServer from "./server/ServerInitializer";
 import ServicesInitializer from "./services/ServicesInitalizer";
+import { RunMigrations } from "./modules/statusCheck";
 
-const dependencyManager = new DependencyManager()
+const dependencyManager = new DependencyManager();
 
-const app:Application = InitializeServer()
+const app: Application = InitializeServer();
 
-ConnectToDatabase()
+ConnectToDatabase();
 
-ConfigureServerMiddlewares(app)
+ConfigureServerMiddlewares(app);
 
-ServicesInitializer(dependencyManager)
+RunMigrations(app);
 
-ModulesInitializer(dependencyManager)
+ServicesInitializer(dependencyManager);
 
-MiddlewaresInitializer(dependencyManager)
+ModulesInitializer(dependencyManager);
 
-ReduceRouters(app,dependencyManager)
+MiddlewaresInitializer(dependencyManager);
+
+ReduceRouters(app, dependencyManager);
