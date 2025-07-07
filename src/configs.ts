@@ -13,8 +13,7 @@ const configs = {
     password: process.env.MIGRATE_USER_DEFAULT_PASSWORD,
   },
   migrations: {
-    uri: process.env.MIGRATE_MONGO_URI,
-    db: process.env.MIGRATE_MONGO_DB,
+    uri: process.env.MONGO_CONNECTION_URI,
   },
 };
 
