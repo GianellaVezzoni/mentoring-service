@@ -29,8 +29,8 @@ jobs:
 
       - name: Crear paquete de despliegue
         run: |
-          mkdir -p deployment
-          cp -r build deployment/
+          mkdir -p deployment/build
+          cp -r build/* deployment/build/
           cp package.json deployment/
           cp package-lock.json deployment/ || echo "No package-lock.json found"
 
