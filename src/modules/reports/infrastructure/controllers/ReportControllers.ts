@@ -64,9 +64,9 @@ export const ReportControllers = ({
     get(req: Request, res: Response) {
       const getExecution = getAll.execute(req.query);
       getExecution
-        .then(({ reports, pagination }) => {
+        .then((reports) => {
           const message = `Reportes obtenidos con exito`;
-          SuccessResponse(res, 200, message, reports, pagination);
+          SuccessResponse(res, 200, message, reports);
         })
         .catch((error) => {
           errorResponses[error.name](res, error);
