@@ -16,26 +16,7 @@ export const MongoUserRepository = (): IUserRepository => ({
     return await UserModel.findByIdAndDelete(id);
   },
   async get(query) {
-    const {
-      page_count = configs.api.default_page_count,
-      page_number = 0,
-      ...rest
-    } = query;
-    const total = await UserModel.countDocuments(rest);
-    const users = await UserModel.find(rest)
-      .select("-password")
-      .limit(Number(page_count))
-      .skip(Number(page_number));
-    const pagination = {
-      total,
-      page_number,
-      page_count,
-      records: users.length,
-    };
-    return {
-      users,
-      pagination,
-    };
+    return await UserModel.find(query).select("-password");
   },
   async getById(id) {
     return await UserModel.findById(id).populate("mentorId");
