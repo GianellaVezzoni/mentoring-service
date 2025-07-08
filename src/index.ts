@@ -38,3 +38,7 @@ app.post("/admin/migrate", async (req, res) => {
     return res.status(500).send("❌ Error al ejecutar migraciones");
   }
 });
+
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
