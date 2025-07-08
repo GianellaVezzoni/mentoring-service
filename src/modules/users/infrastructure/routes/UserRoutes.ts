@@ -11,7 +11,7 @@ const getUserRoutes = (dependencyManager: DependencyManager) => {
   const path = "users";
 
   userRouter.post(`/login`, login);
-  userRouter.post(`/${path}`, save);
+  userRouter.post(`/${path}`, [jwtValidator], save);
   userRouter.get(`/${path}`, [jwtValidator], get);
   userRouter.get(`/${path}/mentors`, [jwtValidator], getMentors);
   userRouter.get(`/${path}/mentees/:id`, [jwtValidator], getMentees);
