@@ -45,5 +45,16 @@ jobs:
 
       - name: Ejecutar migraciones
         run: |
-          curl -X POST "https://mentoring-service.azurewebsites.net/api/v1/admin/migrate" \
-          -H "Authorization: ${{ secrets.ADMIN_KEY }}"
+          for i in {1..5}; do
+            echo "⏳ Esperando que la aplicación se levante... (Intento $i)"
+            sleep 10
+            if curl -X POST "https://mentoring-service.azurewebsites.net/api/v1/admin/migrate" \
+              -H "Authorization: ${{ secrets.ADMIN_KEY }}"; then
+              echo "✅ Migraciones ejecutadas correctamente"
+              exit 0
+            else
+              echo "❌ Intento $i fallido, reintentando..."
+            fi
+          done
+          echo "🚨 Error: Migraciones fallaron después de 5 intentos"
+          exit 1
