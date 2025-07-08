@@ -59,9 +59,9 @@ export const MetricControllers = ({
     get(req: Request, res: Response) {
       const getExecution = getAll.execute(req.query);
       getExecution
-        .then(({ metrics, pagination }) => {
+        .then((metrics) => {
           const message = `Metricas obtenidas con exito`;
-          SuccessResponse(res, 200, message, metrics, pagination);
+          SuccessResponse(res, 200, message, metrics);
         })
         .catch((error) => {
           errorResponses[error.name](res, error);
