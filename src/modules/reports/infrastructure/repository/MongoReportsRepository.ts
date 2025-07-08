@@ -14,25 +14,7 @@ export const MongoReportsRepository = (): IReportRepository => ({
     return await ReportModel.findByIdAndDelete(id);
   },
   async get(query) {
-    const {
-      page_count = configs.api.default_page_count,
-      page_number = 0,
-      ...rest
-    } = query;
-    const total = await ReportModel.countDocuments(rest);
-    const reports = await ReportModel.find(rest)
-      .limit(Number(page_count))
-      .skip(Number(page_number));
-    const pagination = {
-      total,
-      page_number,
-      page_count,
-      records: reports.length,
-    };
-    return {
-      reports,
-      pagination,
-    };
+    return await ReportModel.find(query);
   },
   async getById(id) {
     return await ReportModel.findById(id);
