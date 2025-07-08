@@ -63,9 +63,9 @@ export const ProgressControllers = ({
     get(req: Request, res: Response) {
       const getExecution = getAll.execute(req.query);
       getExecution
-        .then(({ progress, pagination }) => {
+        .then((progress) => {
           const message = `${name}s obtenid${pronoun}s con exito`;
-          SuccessResponse(res, 200, message, progress, pagination);
+          SuccessResponse(res, 200, message, progress);
         })
         .catch((error) => {
           errorResponses[error.name](res, error);
