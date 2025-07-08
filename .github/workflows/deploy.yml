@@ -19,7 +19,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm i
+        run: npm ci
 
       - name: Build
         run: npm run build
@@ -27,12 +27,14 @@ jobs:
           MONGO_CONNECTION_URI: ${{ secrets.MONGO_CONNECTION_URI }}
           ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
 
-      - name: Crear paquete de despliegue
+      - name: Crear paquete de despliegue con dependencias
         run: |
           mkdir -p deployment/build
           cp -r build/* deployment/build/
           cp package.json deployment/
           cp package-lock.json deployment/ || echo "No package-lock.json found"
+          cd deployment
+          npm install --omit=dev
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
