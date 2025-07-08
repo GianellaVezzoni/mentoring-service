@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const configs = {
   api: {
-    port: process.env.PORT,
+    port: process.env.PORT || 8081,
     uri: process.env.MONGO_CONNECTION_URI,
     default_page_count: process.env.DEFAULT_PAGE_COUNT,
   },

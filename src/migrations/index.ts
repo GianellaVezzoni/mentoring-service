@@ -1,5 +1,5 @@
 import { mongoMigrateCli } from "mongo-migrate-ts";
-import configs from "../src/configs";
+import configs from "../configs";
 require("dotenv").config();
 
 mongoMigrateCli({

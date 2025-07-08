@@ -19,3 +19,17 @@ const app = (0, ServerInitializer_1.default)();
 (0, ModulesInitializer_1.default)(dependencyManager);
 (0, MidlewaresInitalizer_1.default)(dependencyManager);
 (0, RoutesReducer_1.default)(app, dependencyManager);
+app.post("/admin/migrate", async (req, res) => {
+    if (req.headers.authorization !== `${process.env.ADMIN_KEY}`) {
+        return res.status(403).send("Unauthorized");
+    }
+    try {
+        const migrate = require("../build/migrations/index.js");
+        await migrate.up();
+        return res.send("✅ Migraciones ejecutadas");
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).send("❌ Error al ejecutar migraciones");
+    }
+});

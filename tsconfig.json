@@ -5,6 +5,7 @@
     "lib": ["ES2022"],
     "allowJs": true,
     "outDir": "build",
+    "rootDir": "src",
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -21,11 +22,6 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node"
   },
-  "include": [
-    "src/**/*",
-    "tests/**/*.ts",
-    "node_modules/lodash-es/**/*.js",
-    "migrations/*.ts"
-  ],
+  "include": ["src"],
   "exclude": ["node_modules", "**/*.spec.ts", "build"]
 }
